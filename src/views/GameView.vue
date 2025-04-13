@@ -1,545 +1,380 @@
-<template>
-    <div class="game-view">
-      <!-- En-tête du jeu avec information de base -->
-      <header class="game-header">
-        <div class="header-info-container">
-          <div class="header-info time-info">
-            <span>Saison: {{ currentSeason }}</span> / 
-            <span>Jour: {{ currentDay }}</span> / 
-            <span>Heure: {{ currentHour }}</span>
-            <div class="luminosity-indicator">Luminosité: {{ luminosity }}%</div>
-          </div>
-          
-          <div class="header-info hero-info">
-            <template v-if="hero">
-              <div class="hero-name">{{ hero.name }}</div>
-              <div class="hero-level">Niveau {{ hero.level }}</div>
-              <div v-if="defermentLevel" class="deferment-level">Niveau de déferlement: {{ defermentLevel }}</div>
-            </template>
-            <div v-else class="no-hero">Aucun héros actif</div>
-          </div>
-          
-          <div class="header-info stats-info">
-            <template v-if="hero">
-              <div class="stat-bar health-bar">
-                <span class="stat-label">Santé:</span>
-                <div class="bar-container">
-                  <div class="bar-fill" :style="{ width: `${(hero.stats.currentHealth / hero.stats.maxHealth) * 100}%` }"></div>
-                  <span class="bar-text">{{ hero.stats.currentHealth }} / {{ hero.stats.maxHealth }}</span>
-                </div>
-              </div>
-              
-              <div class="stat-bar stamina-bar">
-                <span class="stat-label">Endurance:</span>
-                <div class="bar-container">
-                  <div class="bar-fill" :style="{ width: `${(hero.stats.stamina / hero.stats.maxStamina) * 100}%` }"></div>
-                  <span class="bar-text">{{ hero.stats.stamina }} / {{ hero.stats.maxStamina }}</span>
-                </div>
-              </div>
-              
-              <div class="stat-bar vitality-bar">
-                <span class="stat-label">Vitalité:</span>
-                <div class="bar-container">
-                  <div class="bar-fill" :style="{ width: `${(hero.stats.vitality / hero.stats.maxVitality) * 100}%` }"></div>
-                  <span class="bar-text">{{ hero.stats.vitality }} / {{ hero.stats.maxVitality }}</span>
-                </div>
-              </div>
-              
-              <div class="stat-bar energy-bar">
-                <span class="stat-label">Énergie Vitale:</span>
-                <div class="bar-container">
-                  <div class="bar-fill" :style="{ width: `${(hero.stats.vitalEnergy / hero.stats.maxVitalEnergy) * 100}%` }"></div>
-                  <span class="bar-text">{{ hero.stats.vitalEnergy }} / {{ hero.stats.maxVitalEnergy }}</span>
-                </div>
-              </div>
-            </template>
-          </div>
-        </div>
-      </header>
-      
-      <!-- Contenu principal du jeu -->
-      <div class="game-content">
-        <!-- Barre latérale avec navigation -->
-        <aside class="game-sidebar">
-          <nav class="game-nav">
-            <button 
-              v-for="view in views" 
-              :key="view.id"
-              class="nav-button" 
-              :class="{ active: currentView === view.id }" 
-              @click="currentView = view.id"
-            >
-              {{ view.label }}
-            </button>
-          </nav>
-        </aside>
-        
-        <!-- Zone principale de contenu -->
-        <main class="game-main">
-          <!-- Utilisation du composant DecorativeFrame pour le cadre -->
-          <DecorativeFrame :theme="frameTheme" :level="frameMagicLevel">
-            <div v-if="showCombat">
-              <CombatInterface @combat-end="endCombat" />
-            </div>
-            <div v-else-if="showHeroCreation">
-              <HeroCreation @hero-created="onHeroCreated" />
-            </div>
-            <component v-else :is="currentViewComponent" />
-            
-            <!-- Actions disponibles -->
-            <div class="action-buttons" v-if="hero && !showCombat && !showHeroCreation">
-              <button class="action-button combat-button" @click="startCombat">
-                Commencer un combat
-              </button>
-              <button class="action-button death-button" @click="simulateDeath">
-                Simuler la mort
-              </button>
-            </div>
-          </DecorativeFrame>
-        </main>
-      </div>
-      
-      <!-- Modal de mort du héros -->
-      <div v-if="showDeathModal" class="death-modal">
-        <div class="death-modal-content">
-          <h2>Votre Héros Est Tombé</h2>
-          <p>{{ hero?.name }} a été vaincu. Son essence va persister sous forme de vestige, prête à renforcer un futur héros.</p>
-          
-          <div class="vestige-preview">
-            <h3>{{ hero?.name }}'s Vestige</h3>
-            <p>Niveau {{ hero?.level }}</p>
-            <p>Ce vestige contiendra une partie du pouvoir de {{ hero?.name }} et possiblement l'une de ses capacités.</p>
-          </div>
-          
-          <div class="action-buttons">
-            <button class="confirm-button" @click="confirmDeath">Accepter le Destin</button>
-            <button class="cancel-button" @click="cancelDeath">Annuler</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </template>
+// Composant à afficher selon la navigation
+const currentViewComponent = computed(() => {
+  const view = views.find(v => v.id === currentView.value)
+  return view ? view.component : null
+})
   
-  <script setup lang="ts">
-import { ref, computed, markRaw, defineAsyncComponent, watch } from 'vue'
-  import { useGameStore } from '../stores/gameStore'
-  import DecorativeFrame from '../components/DecorativeFrame.vue'
-  import CombatInterface from '../components/CombatInterface.vue'
-  import HeroCreation from '../components/HeroCreation.vue'
-  
-  // Chargement asynchrone des composants de vue pour optimiser les performances
-  const HeroView = defineAsyncComponent(() => import('../components/views/HeroView.vue'))
-  const InventoryView = defineAsyncComponent(() => import('../components/views/InventoryView.vue'))
-  const QuestsView = defineAsyncComponent(() => import('../components/views/QuestsView.vue'))
-  const MapView = defineAsyncComponent(() => import('../components/views/MapView.vue'))
-  const CodexView = defineAsyncComponent(() => import('../components/views/CodexView.vue'))
-  
-  const gameStore = useGameStore()
-  const hero = computed(() => gameStore.hero)
-  
-  // Définition des vues disponibles
-  const views = [
-    { id: 'hero', label: 'Héros', component: markRaw(HeroView) },
-    { id: 'inventory', label: 'Inventaire', component: markRaw(InventoryView) },
-    { id: 'quests', label: 'Quêtes', component: markRaw(QuestsView) },
-    { id: 'map', label: 'Carte', component: markRaw(MapView) },
-    { id: 'codex', label: 'Codex', component: markRaw(CodexView) }
-  ]
-  
-  // Gestion de la vue actuelle
-  const currentView = ref('hero')
-  const showCombat = ref(false)
-  const showHeroCreation = ref(false)
-  const showDeathModal = ref(false)
-  
-  // Variables pour le cadre décoratif
-  const frameTheme = ref('default')
-  const frameMagicLevel = ref(1)
-  
-  // Variables de démonstration (à connecter à votre système de temps/effets)
-  const currentSeason = ref('Printemps')
-  const currentDay = ref(1)
-  const currentHour = ref(12)
-  const luminosity = ref(80)
-  const defermentLevel = ref(0)
-  
-  // Composant à afficher selon la navigation
-  const currentViewComponent = computed(() => {
-    const view = views.find(v => v.id === currentView.value)
-    return view ? view.component : null
-  })
-  
-  // Vérifie si un héros existe, sinon affiche la création de héros
-  function checkHeroExists() {
-    if (!hero.value && !showHeroCreation.value) {
-      showHeroCreation.value = true
-    }
+// Vérifie si un héros existe, sinon affiche la création de héros
+function checkHeroExists() {
+  if (!hero.value && !showHeroCreation.value) {
+    showHeroCreation.value = true
   }
+}
   
-  // Au chargement, vérifie si un héros existe
+// Au chargement, vérifie si un héros existe
+checkHeroExists()
+  
+// Gestion du combat
+function startCombat() {
+  showCombat.value = true
+}
+  
+function endCombat() {
+  showCombat.value = false
+}
+  
+// Gestion de la création du héros
+function onHeroCreated() {
+  showHeroCreation.value = false
+}
+  
+// Gestion de la mort du héros
+function simulateDeath() {
+  showDeathModal.value = true
+}
+  
+function confirmDeath() {
+  gameStore.handleHeroDeath()
+  showDeathModal.value = false
+  
+  // Après la mort, si aucun héros n'est actif, montrer la création
   checkHeroExists()
+}
   
-  // Gestion du combat
-  function startCombat() {
-    showCombat.value = true
+function cancelDeath() {
+  showDeathModal.value = false
+}
+  
+// Mise à jour du thème du cadre selon le niveau du héros ou d'autres facteurs
+function updateFrameTheme() {
+  if (!hero.value) {
+    frameTheme.value = 'default'
+    frameMagicLevel.value = 1
+    return
   }
   
-  function endCombat() {
-    showCombat.value = false
+  const level = hero.value.level
+  
+  if (defermentLevel.value > 0) {
+    frameTheme.value = 'deferment'
+    frameMagicLevel.value = Math.min(defermentLevel.value + 1, 5)
+  } else if (level >= 15) {
+    frameTheme.value = 'arcane'
+    frameMagicLevel.value = 5
+  } else if (level >= 10) {
+    frameTheme.value = 'nature'
+    frameMagicLevel.value = 4
+  } else if (level >= 5) {
+    frameTheme.value = 'fire'
+    frameMagicLevel.value = 3
+  } else if (level >= 2) {
+    frameTheme.value = 'default'
+    frameMagicLevel.value = 2
+  } else {
+    frameTheme.value = 'default'
+    frameMagicLevel.value = 1
   }
+}
   
-  // Gestion de la création du héros
-  function onHeroCreated() {
-    showHeroCreation.value = false
-  }
+// Observer les changements de héros pour mettre à jour le thème
+watch(() => hero.value?.level, () => {
+  updateFrameTheme()
+}, { immediate: true })
+</script>
   
-  // Gestion de la mort du héros
-  function simulateDeath() {
-    showDeathModal.value = true
-  }
+<style scoped>
+/* Styles généraux */
+.game-view {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  font-family: 'Inter', sans-serif;
+  background-color: #f9f9f9;
+  color: #333;
+}
   
-  function confirmDeath() {
-    gameStore.handleHeroDeath()
-    showDeathModal.value = false
-    
-    // Après la mort, si aucun héros n'est actif, montrer la création
-    checkHeroExists()
-  }
+/* En-tête du jeu */
+.game-header {
+  background-color: #fff;
+  border-bottom: 1px solid #ddd;
+  padding: 10px 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
   
-  function cancelDeath() {
-    showDeathModal.value = false
-  }
+.header-info-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+}
   
-  // Mise à jour du thème du cadre selon le niveau du héros ou d'autres facteurs
-  function updateFrameTheme() {
-    if (!hero.value) {
-      frameTheme.value = 'default'
-      frameMagicLevel.value = 1
-      return
-    }
-    
-    const level = hero.value.level
-    
-    if (defermentLevel.value > 0) {
-      frameTheme.value = 'deferment'
-      frameMagicLevel.value = Math.min(defermentLevel.value + 1, 5)
-    } else if (level >= 15) {
-      frameTheme.value = 'arcane'
-      frameMagicLevel.value = 5
-    } else if (level >= 10) {
-      frameTheme.value = 'nature'
-      frameMagicLevel.value = 4
-    } else if (level >= 5) {
-      frameTheme.value = 'fire'
-      frameMagicLevel.value = 3
-    } else if (level >= 2) {
-      frameTheme.value = 'default'
-      frameMagicLevel.value = 2
-    } else {
-      frameTheme.value = 'default'
-      frameMagicLevel.value = 1
-    }
-  }
+.header-info {
+  padding: 10px;
+  border: 1px solid #eee;
+  border-radius: 6px;
+}
   
-  // Observer les changements de héros pour mettre à jour le thème
-  watch(() => hero.value?.level, () => {
-    updateFrameTheme()
-  }, { immediate: true })
-  </script>
+.hero-name {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #1890ff;
+}
   
-  <style scoped>
-  /* Styles généraux */
-  .game-view {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    overflow: hidden;
-    font-family: 'Inter', sans-serif;
-    background-color: #f9f9f9;
-    color: #333;
-  }
+.hero-level, .deferment-level {
+  display: inline-block;
+  padding: 3px 8px;
+  background-color: #e6f7ff;
+  color: #1890ff;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  margin-top: 5px;
+}
   
-  /* En-tête du jeu */
-  .game-header {
-    background-color: #fff;
-    border-bottom: 1px solid #ddd;
-    padding: 10px 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  }
+.deferment-level {
+  background-color: #fff2e8;
+  color: #fa541c;
+}
   
+/* Barres de statistiques */
+.stat-bar {
+  margin-bottom: 8px;
+}
+  
+.stat-label {
+  font-weight: bold;
+  display: inline-block;
+  width: 90px;
+}
+  
+.bar-container {
+  display: inline-block;
+  width: calc(100% - 100px);
+  height: 15px;
+  background-color: #f0f0f0;
+  border-radius: 7px;
+  overflow: hidden;
+  position: relative;
+}
+  
+.bar-fill {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+  
+.health-bar .bar-fill {
+  background-color: #52c41a;
+}
+  
+.stamina-bar .bar-fill {
+  background-color: #faad14;
+}
+  
+.vitality-bar .bar-fill {
+  background-color: #722ed1;
+}
+  
+.energy-bar .bar-fill {
+  background-color: #1890ff;
+}
+  
+.bar-text {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  font-size: 0.8rem;
+  color: #333;
+  line-height: 15px;
+}
+  
+/* Contenu principal */
+.game-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+  
+/* Barre latérale */
+.game-sidebar {
+  width: 200px;
+  background-color: #fff;
+  border-right: 1px solid #ddd;
+  padding: 15px;
+}
+  
+.nav-button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 12px 15px;
+  margin-bottom: 10px;
+  background-color: transparent;
+  border: 1px solid #eee;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 1rem;
+}
+  
+.nav-button:hover {
+  background-color: #f0f0f0;
+}
+  
+.nav-button.active {
+  background-color: #1890ff;
+  color: white;
+  border-color: #1890ff;
+}
+  
+/* Zone principale */
+.game-main {
+  flex: 1;
+  padding: 20px;
+  overflow: auto;
+  position: relative;
+}
+  
+/* Boutons d'action */
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
+}
+  
+.action-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+  
+.combat-button {
+  background-color: #1890ff;
+  color: white;
+}
+  
+.combat-button:hover {
+  background-color: #40a9ff;
+}
+  
+.death-button {
+  background-color: #ff4d4f;
+  color: white;
+}
+  
+.death-button:hover {
+  background-color: #ff7875;
+}
+  
+/* Modal de mort du héros */
+.death-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+  
+.death-modal-content {
+  background-color: white;
+  padding: 30px;
+  border-radius: 8px;
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+}
+  
+.death-modal-content h2 {
+  color: #ff4d4f;
+  margin-top: 0;
+}
+  
+.vestige-preview {
+  margin: 30px 0;
+  padding: 15px;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+  
+.vestige-preview h3 {
+  margin-top: 0;
+  color: #1890ff;
+}
+  
+.death-modal .action-buttons {
+  margin-top: 30px;
+}
+  
+.confirm-button {
+  background-color: #1890ff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+  
+.confirm-button:hover {
+  background-color: #40a9ff;
+}
+  
+.cancel-button {
+  background-color: #f5f5f5;
+  color: rgba(0, 0, 0, 0.65);
+  border: 1px solid #d9d9d9;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+  
+.cancel-button:hover {
+  background-color: #fafafa;
+}
+  
+/* Responsive */
+@media (max-width: 1024px) {
   .header-info-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 20px;
+    grid-template-columns: 1fr;
+    gap: 10px;
   }
   
-  .header-info {
-    padding: 10px;
-    border: 1px solid #eee;
-    border-radius: 6px;
-  }
-  
-  .hero-name {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: #1890ff;
-  }
-  
-  .hero-level, .deferment-level {
-    display: inline-block;
-    padding: 3px 8px;
-    background-color: #e6f7ff;
-    color: #1890ff;
-    border-radius: 12px;
-    font-size: 0.9rem;
-    margin-top: 5px;
-  }
-  
-  .deferment-level {
-    background-color: #fff2e8;
-    color: #fa541c;
-  }
-  
-  /* Barres de statistiques */
-  .stat-bar {
-    margin-bottom: 8px;
-  }
-  
-  .stat-label {
-    font-weight: bold;
-    display: inline-block;
-    width: 90px;
-  }
-  
-  .bar-container {
-    display: inline-block;
-    width: calc(100% - 100px);
-    height: 15px;
-    background-color: #f0f0f0;
-    border-radius: 7px;
-    overflow: hidden;
-    position: relative;
-  }
-  
-  .bar-fill {
-    height: 100%;
-    transition: width 0.3s ease;
-  }
-  
-  .health-bar .bar-fill {
-    background-color: #52c41a;
-  }
-  
-  .stamina-bar .bar-fill {
-    background-color: #faad14;
-  }
-  
-  .vitality-bar .bar-fill {
-    background-color: #722ed1;
-  }
-  
-  .energy-bar .bar-fill {
-    background-color: #1890ff;
-  }
-  
-  .bar-text {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    text-align: center;
-    font-size: 0.8rem;
-    color: #333;
-    line-height: 15px;
-  }
-  
-  /* Contenu principal */
-  .game-content {
-    display: flex;
-    flex: 1;
-    overflow: hidden;
-  }
-  
-  /* Barre latérale */
   .game-sidebar {
-    width: 200px;
-    background-color: #fff;
-    border-right: 1px solid #ddd;
-    padding: 15px;
+    width: 150px;
+  }
+}
+  
+@media (max-width: 768px) {
+  .game-content {
+    flex-direction: column;
+  }
+  
+  .game-sidebar {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px;
   }
   
   .nav-button {
-    display: block;
-    width: 100%;
-    text-align: left;
-    padding: 12px 15px;
-    margin-bottom: 10px;
-    background-color: transparent;
-    border: 1px solid #eee;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-size: 1rem;
+    width: auto;
+    margin-bottom: 0;
   }
   
-  .nav-button:hover {
-    background-color: #f0f0f0;
-  }
-  
-  .nav-button.active {
-    background-color: #1890ff;
-    color: white;
-    border-color: #1890ff;
-  }
-  
-  /* Zone principale */
   .game-main {
-    flex: 1;
-    padding: 20px;
-    overflow: auto;
-    position: relative;
+    padding: 10px;
   }
-  
-  /* Boutons d'action */
-  .action-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-top: 20px;
-  }
-  
-  .action-button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.3s;
-  }
-  
-  .combat-button {
-    background-color: #1890ff;
-    color: white;
-  }
-  
-  .combat-button:hover {
-    background-color: #40a9ff;
-  }
-  
-  .death-button {
-    background-color: #ff4d4f;
-    color: white;
-  }
-  
-  .death-button:hover {
-    background-color: #ff7875;
-  }
-  
-  /* Modal de mort du héros */
-  .death-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-  }
-  
-  .death-modal-content {
-    background-color: white;
-    padding: 30px;
-    border-radius: 8px;
-    max-width: 500px;
-    width: 100%;
-    text-align: center;
-  }
-  
-  .death-modal-content h2 {
-    color: #ff4d4f;
-    margin-top: 0;
-  }
-  
-  .vestige-preview {
-    margin: 30px 0;
-    padding: 15px;
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-  }
-  
-  .vestige-preview h3 {
-    margin-top: 0;
-    color: #1890ff;
-  }
-  
-  .death-modal .action-buttons {
-    margin-top: 30px;
-  }
-  
-  .confirm-button {
-    background-color: #1890ff;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-  }
-  
-  .confirm-button:hover {
-    background-color: #40a9ff;
-  }
-  
-  .cancel-button {
-    background-color: #f5f5f5;
-    color: rgba(0, 0, 0, 0.65);
-    border: 1px solid #d9d9d9;
-    padding: 10px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-  }
-  
-  .cancel-button:hover {
-    background-color: #fafafa;
-  }
-  
-  /* Responsive */
-  @media (max-width: 1024px) {
-    .header-info-container {
-      grid-template-columns: 1fr;
-      gap: 10px;
-    }
-    
-    .game-sidebar {
-      width: 150px;
-    }
-  }
-  
-  @media (max-width: 768px) {
-    .game-content {
-      flex-direction: column;
-    }
-    
-    .game-sidebar {
-      width: 100%;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      padding: 10px;
-    }
-    
-    .nav-button {
-      width: auto;
-      margin-bottom: 0;
-    }
-    
-    .game-main {
-      padding: 10px;
-    }
-  }
-  </style>
+}
+</style>

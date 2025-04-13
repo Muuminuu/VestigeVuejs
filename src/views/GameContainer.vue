@@ -239,22 +239,27 @@ const vestiges = ref([
 .game-container {
   display: flex;
   flex-direction: column;
-  width: 1024px;
-  height: 768px;
-  margin: 0 auto;
+  width: 100vw; /* Utilise toute la largeur de la fenêtre */
+  height: 100vh; /* Utilise toute la hauteur de la fenêtre */
   background-color: #f0f2f5;
-  border: 1px solid #d9d9d9;
   overflow: hidden;
+  position: fixed; /* Empêche le défilement de la page */
+  top: 0;
+  left: 0;
 }
 
 /* Entête du jeu */
 .game-header {
   height: 100px;
+  min-height: 100px;
+  max-height: 100px;
   display: flex;
   justify-content: space-between;
   padding: 10px 20px;
   background-color: white;
   border-bottom: 1px solid #e8e8e8;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .hero-info {
@@ -350,15 +355,21 @@ const vestiges = ref([
 .game-main {
   display: flex;
   flex: 1;
-  height: calc(100% - 160px); /* 100% - (header + actions) */
+  overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* Navigation latérale */
 .game-nav {
   width: 150px;
+  min-width: 150px;
+  max-width: 150px;
   background-color: white;
   border-right: 1px solid #e8e8e8;
   padding: 15px 0;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .nav-button {
@@ -390,23 +401,28 @@ const vestiges = ref([
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px;
+  padding: 10px;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .decorative-frame {
-  width: 824px; /* 1024 - 150 (nav) - 2*20 (padding) - 10 (marge) */
-  height: 568px; /* 768 - 100 (header) - 60 (actions) - 2*20 (padding) */
+  width: 100%;
+  height: 100%;
   position: relative;
   background-color: white;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden; /* Empêche tout défilement horizontal */
+  box-sizing: border-box;
 }
 
 .frame-content {
   width: 100%;
   height: 100%;
   padding: 20px;
-  overflow-y: auto;
+  overflow-y: auto; /* Seul le défilement vertical est permis */
+  overflow-x: hidden; /* Empêche le défilement horizontal */
   box-sizing: border-box;
 }
 
@@ -644,6 +660,7 @@ h3 {
 .abilities-list, .vestiges-list {
   max-height: 200px;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .ability-item, .vestige-item {
@@ -697,12 +714,15 @@ h3 {
 /* Barre d'actions en bas */
 .game-actions {
   height: 60px;
+  min-height: 60px;
+  max-height: 60px;
   display: flex;
   justify-content: center;
   align-items: center;
   background-color: white;
   border-top: 1px solid #e8e8e8;
-  padding: 0 20px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .action-button {

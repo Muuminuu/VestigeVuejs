@@ -254,4 +254,4 @@ const ornamentCount = computed(() => Math.min(props.level - 1, 4));
     bottom: 15px;
   }
 }
-</style>+
+</style>

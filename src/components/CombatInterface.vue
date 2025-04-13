@@ -172,17 +172,26 @@ function useHeroAbility(abilityId?: string) {
 
 // Terminer le combat et afficher les résultats
 function endCombat() {
-  if (!combatSystem.value) return
+  if (!combatSystem.value) {
+    console.log("Combat system is null in endCombat");
+    return;
+  }
   
+  console.log("endCombat called, getting combat result");
   // Obtenir les résultats du combat
-  combatResult.value = combatSystem.value.getCombatResult()
-  showResults.value = true
+  combatResult.value = combatSystem.value.getCombatResult();
+  console.log("Combat result:", combatResult.value);
+  showResults.value = true;
+  console.log("showResults set to true:", showResults.value);
   
-  // Si le héros est mort, créer un vestige
-  if (!combatResult.value.victory && hero.value && hero.value.stats.currentHealth <= 0) {
-    gameStore.handleHeroDeath()
+  // Si le combat est perdu (hero mort), créer un vestige
+  if (!combatResult.value.victory) {
+    console.log("Combat lost, calling handleHeroDeath");
+    gameStore.handleHeroDeath();
+    console.log("handleHeroDeath completed");
   }
 }
+
 
 // Action suite aux résultats du combat
 function handleCombatResults() {

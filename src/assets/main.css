@@ -33,3 +33,55 @@ a,
     padding: 0 2rem;
   }
 }
+
+/* Dans votre fichier CSS principal ou App.vue */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden; /* Empêche le scroll du body */
+}
+
+#app {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.game-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.game-header {
+  flex: 0 0 auto; /* Hauteur automatique basée sur le contenu */
+}
+
+.game-content {
+  flex: 1;
+  display: flex;
+  overflow: hidden; /* Empêche le débordement */
+}
+
+.game-sidebar {
+  flex: 0 0 250px; /* Largeur fixe */
+  overflow-y: auto; /* Permet le scroll à l'intérieur */
+  border-right: 1px solid #ddd;
+}
+
+.game-main {
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto; /* Permet le scroll à l'intérieur */
+  position: relative; /* Pour le positionnement des éléments décoratifs */
+}
+
+/* Pour les panneaux de contenu avec scroll interne */
+.scroll-container {
+  max-height: 300px; /* Hauteur maximale */
+  overflow-y: auto;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 10px;
+}

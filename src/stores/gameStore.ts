@@ -45,6 +45,9 @@ export const useGameStore = defineStore('game', () => {
     // Add the vestige to our collection
     VestigeManager.getInstance().addVestige(vestige);
     
+    // Force refresh of vestiges list (ajoutez cette ligne)
+    const refreshedVestiges = VestigeManager.getInstance().getVestiges();
+    
     // Clear the current hero
     hero.value = null;
   }

@@ -20,6 +20,7 @@ export class VestigeManager {
     
     // Get all available vestiges
     public getVestiges(): Vestige[] {
+        this.loadVestiges();
         return [...this.vestiges];
     }
     

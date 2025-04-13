@@ -105,8 +105,8 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { useGameStore } from '../../stores/gameStore';
-import type { Quest } from '../../core/types/ViewTypes';
+import { useGameStore } from '../stores/gameStore';
+import type { Quest } from '../core/types/ViewTypes';
 
 const gameStore = useGameStore();
 const hero = computed(() => gameStore.hero);

@@ -98,7 +98,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import type { CodexEntry, CodexCategory } from '../../core/types/ViewTypes';
+import type { CodexEntry, CodexCategory } from '../core/types/ViewTypes';
 
 // Catégories du codex
 const categories = ref<CodexCategory[]>([

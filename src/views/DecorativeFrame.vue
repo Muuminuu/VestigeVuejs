@@ -1,33 +1,32 @@
 <template>
-  <div class="decorative-frame" :class="{ [themeClass]: true }">
-    <!-- Coins -->
+  <div class="decorative-frame" :class="`theme-${theme}`">
+    <!-- Coins du cadre -->
     <div class="frame-corner top-left"></div>
     <div class="frame-corner top-right"></div>
     <div class="frame-corner bottom-left"></div>
     <div class="frame-corner bottom-right"></div>
     
-    <!-- Bords -->
+    <!-- Bords du cadre -->
     <div class="frame-edge top"></div>
     <div class="frame-edge right"></div>
     <div class="frame-edge bottom"></div>
     <div class="frame-edge left"></div>
     
-    <!-- Contenu avec défilement si nécessaire -->
-    <div class="frame-content">
-      <slot></slot>
+    <!-- Ornements -->
+    <div v-if="level > 1" class="frame-ornaments">
+      <div v-for="i in Math.min(level - 1, 4)" :key="i" 
+           class="ornament" :class="`ornament-${i}`"></div>
     </div>
     
-    <!-- Ornements optionnels selon le niveau -->
-    <div v-if="showOrnaments" class="frame-ornaments">
-      <div v-for="i in ornamentCount" :key="i" class="ornament" :class="`ornament-${i}`"></div>
+    <!-- Contenu du cadre -->
+    <div class="frame-content">
+      <slot></slot>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-
-const props = defineProps({
+defineProps({
   theme: {
     type: String,
     default: 'default',
@@ -38,45 +37,35 @@ const props = defineProps({
     default: 1
   }
 });
-
-// Classe CSS basée sur le thème
-const themeClass = computed(() => `theme-${props.theme}`);
-
-// Détermine si on affiche des ornements en fonction du niveau
-const showOrnaments = computed(() => props.level > 1);
-
-// Nombre d'ornements basé sur le niveau (max 4)
-const ornamentCount = computed(() => Math.min(props.level - 1, 4));
 </script>
 
 <style scoped>
 .decorative-frame {
-  position: relative;
   width: 100%;
-  height: 600px; /* Hauteur fixe */
-  max-height: 600px; /* Hauteur maximale fixe */
-  padding: 20px;
+  height: 100%;
+  position: relative;
+  background-color: #f0f2f5;
+  border-radius: 8px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
   box-sizing: border-box;
-  overflow: hidden; /* Cache tout ce qui dépasse du cadre */
 }
 
 .frame-content {
   width: 100%;
   height: 100%;
-  overflow-y: auto; /* Permet le défilement vertical si le contenu est trop grand */
-  overflow-x: hidden; /* Empêche le défilement horizontal */
-  position: relative;
-  z-index: 1;
-  padding: 10px;
+  padding: 30px;
+  overflow-y: auto;
+  overflow-x: hidden;
   box-sizing: border-box;
 }
 
-/* Coins du cadre */
+/* Coins et bords du cadre */
 .frame-corner {
   position: absolute;
-  width: 20px;
-  height: 20px;
-  border: 2px solid;
+  width: 30px;
+  height: 30px;
+  border: 3px solid;
   z-index: 2;
 }
 
@@ -108,24 +97,23 @@ const ornamentCount = computed(() => Math.min(props.level - 1, 4));
   border-top: none;
 }
 
-/* Bords du cadre */
 .frame-edge {
   position: absolute;
   background: transparent;
   border: 1px dashed;
-  opacity: 0.6;
+  opacity: 0.7;
   z-index: 2;
 }
 
 .frame-edge.top, .frame-edge.bottom {
-  left: 20px;
-  right: 20px;
+  left: 30px;
+  right: 30px;
   height: 0;
 }
 
 .frame-edge.left, .frame-edge.right {
-  top: 20px;
-  bottom: 20px;
+  top: 30px;
+  bottom: 30px;
   width: 0;
 }
 
@@ -147,19 +135,19 @@ const ornamentCount = computed(() => Math.min(props.level - 1, 4));
 
 .ornament {
   position: absolute;
-  width: 24px;
-  height: 24px;
+  width: 36px;
+  height: 36px;
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
 }
 
-.ornament-1 { top: 10px; left: 50%; transform: translateX(-50%); }
-.ornament-2 { top: 50%; right: 10px; transform: translateY(-50%); }
-.ornament-3 { bottom: 10px; left: 50%; transform: translateX(-50%); }
-.ornament-4 { top: 50%; left: 10px; transform: translateY(-50%); }
+.ornament-1 { top: 15px; left: 50%; transform: translateX(-50%); }
+.ornament-2 { top: 50%; right: 15px; transform: translateY(-50%); }
+.ornament-3 { bottom: 15px; left: 50%; transform: translateX(-50%); }
+.ornament-4 { top: 50%; left: 15px; transform: translateY(-50%); }
 
-/* Thèmes */
+/* Thèmes du cadre */
 .theme-default {
   --frame-color: #1890ff;
 }
@@ -214,44 +202,13 @@ const ornamentCount = computed(() => Math.min(props.level - 1, 4));
   border-color: var(--frame-color);
 }
 
-/* Animation subtile des bords pour le thème de déferlement */
+/* Animation subtile des bords pour certains thèmes */
 .theme-deferment .frame-edge {
   animation: pulse 2s infinite alternate;
 }
 
 @keyframes pulse {
-  0% { opacity: 0.4; }
-  100% { opacity: 0.8; }
-}
-
-/* Media queries pour la responsivité */
-@media (max-width: 768px) {
-  .decorative-frame {
-    height: 500px;
-    max-height: 500px;
-  }
-}
-
-@media (max-width: 480px) {
-  .decorative-frame {
-    height: 400px;
-    max-height: 400px;
-    padding: 15px;
-  }
-  
-  .frame-corner {
-    width: 15px;
-    height: 15px;
-  }
-  
-  .frame-edge.top, .frame-edge.bottom {
-    left: 15px;
-    right: 15px;
-  }
-  
-  .frame-edge.left, .frame-edge.right {
-    top: 15px;
-    bottom: 15px;
-  }
+  0% { opacity: 0.5; }
+  100% { opacity: 0.9; }
 }
 </style>

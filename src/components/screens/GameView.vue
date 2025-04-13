@@ -99,10 +99,10 @@
   <script setup lang="ts">
   import { ref, computed, watch } from 'vue'
   import { useGameStore } from '../../stores/gameStore'
-  import DecorativeFrame from '../../components/DecorativeFrame.vue'
+  import DecorativeFrame from '../../views/DecorativeFrame.vue'
   import CombatInterface from '../../components/CombatInterface.vue'
-  import MapView from '../../components/views/MapView.vue'
-  import { HeroView, InventoryView, QuestsView, CodexView } from '../../components/views'
+  import MapView from '../../views/MapView.vue'
+  import { HeroView, InventoryView, QuestsView, CodexView } from '../../views'
   
   // Définir les émetteurs d'événements
   const emit = defineEmits(['return-home'])

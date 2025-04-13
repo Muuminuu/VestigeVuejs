@@ -108,11 +108,11 @@
   <script setup lang="ts">
   import { ref, computed, watch } from 'vue'
   import { useGameStore } from '../stores/gameStore'
-  import DecorativeFrame from '../components/DecorativeFrame.vue'
+  import DecorativeFrame from './DecorativeFrame.vue'
   import HeroCreation from '../components/HeroCreation.vue'
   import CombatInterface from '../components/CombatInterface.vue'
-  import MapView from '../components/views/MapView.vue'
-  import { HeroView, InventoryView, QuestsView, CodexView } from '../components/views'
+  import MapView from './MapView.vue'
+  import { HeroView, InventoryView, QuestsView, CodexView } from '.'
   
   // Store du jeu
   const gameStore = useGameStore()

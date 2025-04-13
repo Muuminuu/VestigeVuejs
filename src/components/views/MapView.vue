@@ -76,6 +76,22 @@
         </div>
       </div>
       
+      <!-- Contrôles de déplacement -->
+      <div class="movement-controls">
+        <h3>Déplacement</h3>
+        <div class="direction-buttons">
+          <button class="direction-button north" @click="moveHero('north')">Nord</button>
+          <div class="middle-row">
+            <button class="direction-button west" @click="moveHero('west')">Ouest</button>
+            <button class="direction-button east" @click="moveHero('east')">Est</button>
+          </div>
+          <button class="direction-button south" @click="moveHero('south')">Sud</button>
+        </div>
+        <div class="movement-info">
+          <p v-if="movementMessage" class="movement-message">{{ movementMessage }}</p>
+        </div>
+      </div>
+      
       <div class="map-info" v-if="selectedPOI">
         <h3>{{ selectedPOI.name }}</h3>
         <div class="poi-details">
@@ -98,9 +114,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useGameStore } from '../../stores/gameStore';
 import type { Region, PointOfInterest } from '../../core/types/ViewTypes';
+
+// Définir les emits pour déclencher des événements
+const emit = defineEmits(['start-combat']);
 
 const gameStore = useGameStore();
 const hero = computed(() => gameStore.hero);
@@ -115,10 +134,13 @@ const startPosition = ref({ x: 0, y: 0 });
 const selectedRegion = ref('all');
 const selectedPOI = ref<PointOfInterest | null>(null);
 
-// Position du héros (pour démonstration)
+// Position du héros
 const heroPosition = ref({ x: 45, y: 38 });
 
-// Données des régions (à remplacer par vos données réelles)
+// Message de déplacement
+const movementMessage = ref('');
+
+// Données des régions
 const regions = ref<Region[]>([
   {
     id: 'forest',
@@ -365,14 +387,90 @@ function selectPOI(poi: PointOfInterest) {
 }
 
 function travelToPOI(poi: PointOfInterest) {
-  // Implémentez ici la logique de voyage vers un point d'intérêt
-  alert(`Voyage vers ${poi.name} en cours...`);
-  
-  // Simuler le déplacement du héros
+  // Déplacer le héros vers le POI
   heroPosition.value = { x: poi.x, y: poi.y };
+  
+  // Afficher un message
+  movementMessage.value = `Vous êtes arrivé à ${poi.name}.`;
+  
+  // Si c'est un donjon, déclencher un combat
+  if (poi.type === 'dungeon') {
+    setTimeout(() => {
+      movementMessage.value = `Vous entrez dans ${poi.name}. Des ennemis vous attendent !`;
+      
+      // Attendre un peu puis déclencher le combat
+      setTimeout(() => {
+        emit('start-combat');
+      }, 1500);
+    }, 500);
+  }
   
   // Réinitialiser la sélection
   selectedPOI.value = null;
+}
+
+// Fonction de déplacement dans les directions cardinales
+function moveHero(direction: 'north' | 'south' | 'east' | 'west') {
+  const step = 5; // Pas de déplacement en pourcentage
+  let newX = heroPosition.value.x;
+  let newY = heroPosition.value.y;
+  
+  // Calculer la nouvelle position
+  switch (direction) {
+    case 'north':
+      newY = Math.max(0, heroPosition.value.y - step);
+      break;
+    case 'south':
+      newY = Math.min(100, heroPosition.value.y + step);
+      break;
+    case 'east':
+      newX = Math.min(100, heroPosition.value.x + step);
+      break;
+    case 'west':
+      newX = Math.max(0, heroPosition.value.x - step);
+      break;
+  }
+  
+  // Mettre à jour la position
+  heroPosition.value = { x: newX, y: newY };
+  
+  // Afficher un message de déplacement
+  const directionNames = {
+    north: 'le Nord',
+    south: 'le Sud',
+    east: 'l\'Est',
+    west: 'l\'Ouest'
+  };
+  
+  movementMessage.value = `Vous vous déplacez vers ${directionNames[direction]}.`;
+  
+  // Trouver la région actuelle
+  const currentRegion = regions.value.find(region => 
+    newX >= region.x && 
+    newX <= (region.x + region.width) && 
+    newY >= region.y && 
+    newY <= (region.y + region.height)
+  );
+  
+  if (currentRegion) {
+    // Si c'est une région non découverte, la découvrir
+    if (!currentRegion.discovered) {
+      currentRegion.discovered = true;
+      movementMessage.value = `Vous découvrez une nouvelle région : ${currentRegion.name}!`;
+    }
+    
+    // Chance de rencontrer un ennemi (40%)
+    if (Math.random() < 0.4) {
+      setTimeout(() => {
+        movementMessage.value = `Une créature hostile vous attaque dans ${currentRegion.name}!`;
+        
+        // Attendre un peu puis déclencher le combat
+        setTimeout(() => {
+          emit('start-combat');
+        }, 1500);
+      }, 1000);
+    }
+  }
 }
 </script>
 
@@ -447,7 +545,8 @@ function travelToPOI(poi: PointOfInterest) {
   position: relative;
   background-color: #f0f0f0;
   cursor: grab;
-  min-height: 400px;
+  min-height: 300px;
+  max-height: 300px;
 }
 
 .map-container:active {
@@ -613,6 +712,68 @@ function travelToPOI(poi: PointOfInterest) {
   0% { box-shadow: 0 0 0 0 rgba(82, 196, 26, 0.7); }
   70% { box-shadow: 0 0 0 10px rgba(82, 196, 26, 0); }
   100% { box-shadow: 0 0 0 0 rgba(82, 196, 26, 0); }
+}
+
+/* Contrôles de déplacement */
+.movement-controls {
+  margin-top: 15px;
+  background-color: white;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.movement-controls h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #1890ff;
+  text-align: center;
+}
+
+.direction-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.middle-row {
+  display: flex;
+  gap: 40px;
+}
+
+.direction-button {
+  width: 80px;
+  height: 40px;
+  background-color: #1890ff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.direction-button:hover {
+  background-color: #40a9ff;
+}
+
+.movement-info {
+  margin-top: 15px;
+  min-height: 40px;
+}
+
+.movement-message {
+  text-align: center;
+  padding: 8px;
+  background-color: #f6ffed;
+  border-radius: 4px;
+  animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* Informations sur le POI sélectionné */

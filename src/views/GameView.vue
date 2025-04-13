@@ -53,20 +53,24 @@
           <decorative-frame :theme="frameTheme" :level="frameMagicLevel">
             <!-- Affichage du composant de création de héros si nécessaire -->
             <hero-creation v-if="showHeroCreation" @hero-created="onHeroCreated" />
-            
+              
             <!-- Affichage du combat si actif -->
             <combat-interface v-else-if="showCombat" @end-combat="endCombat" />
-            
+              
             <!-- Affichage du composant de vue actuel si un héros existe -->
-            <component :is="currentViewComponent" v-else-if="hero" />
-            
+            <component 
+              :is="currentViewComponent" 
+              v-else-if="hero" 
+              @start-combat="startCombat"
+            />
+              
             <!-- Message par défaut si aucun héros n'existe -->
             <div v-else class="no-hero">
               <p>Vous n'avez pas de héros actif. Créez un nouveau héros pour commencer votre aventure.</p>
               <button class="action-button" @click="showHeroCreation = true">Créer un Héros</button>
             </div>
           </decorative-frame>
-          
+            
           <!-- Boutons d'action en bas de l'écran si un héros existe -->
           <div class="action-buttons" v-if="hero && !showCombat && !showHeroCreation">
             <button class="action-button combat-button" @click="startCombat">
@@ -78,20 +82,20 @@
           </div>
         </div>
       </div>
-      
+        
       <!-- Modal pour la mort du héros -->
       <div v-if="showDeathModal" class="death-modal">
         <div class="death-modal-content">
           <h2>Votre Héros Est Tombé</h2>
-          
+            
           <p>{{ hero?.name }} a été vaincu. Son essence subsistera sous forme de vestige, prête à renforcer un futur héros.</p>
-          
+            
           <div class="vestige-preview" v-if="hero">
             <h3>{{ hero.name }}'s Vestige</h3>
             <p>Niveau {{ hero.level }}</p>
             <p>Ce vestige contiendra une partie de la puissance de {{ hero.name }} et potentiellement l'une de ses capacités.</p>
           </div>
-          
+            
           <div class="action-buttons">
             <button class="confirm-button" @click="confirmDeath">Accepter le Destin</button>
             <button class="cancel-button" @click="cancelDeath">Annuler</button>
@@ -107,7 +111,8 @@
   import DecorativeFrame from '../components/DecorativeFrame.vue'
   import HeroCreation from '../components/HeroCreation.vue'
   import CombatInterface from '../components/CombatInterface.vue'
-  import { HeroView, InventoryView, QuestsView, MapView, CodexView } from '../components/views'
+  import MapView from '../components/views/MapView.vue'
+  import { HeroView, InventoryView, QuestsView, CodexView } from '../components/views'
   
   // Store du jeu
   const gameStore = useGameStore()
@@ -124,7 +129,7 @@
   const frameMagicLevel = ref(1)
   const defermentLevel = ref(0) // À implémenter dans votre logique de jeu
   
-  // Définition des vues disponibles
+  // Définition des vues disponibles avec leur composant associé
   const views = [
     { id: 'hero', label: 'Héros', component: HeroView },
     { id: 'inventory', label: 'Inventaire', component: InventoryView },
@@ -152,6 +157,11 @@
   // Gestion du combat
   function startCombat() {
     showCombat.value = true
+    
+    // Réinitialiser la vue courante pour revenir au combat après
+    if (currentView.value !== 'hero') {
+      currentView.value = 'hero'
+    }
   }
     
   function endCombat() {

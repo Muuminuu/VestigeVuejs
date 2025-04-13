@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div class="quests-view">
     <h2>Journal de Quêtes</h2>
     
@@ -545,5 +545,389 @@ function abandonQuest(quest: Quest): void {
   padding: 40px;
   background-color: #f9f9f9;
   border-radius: 8px;
+}
+</style> -->
+
+<template>
+  <div class="quests-view">
+    <h2>Journal de Quêtes</h2>
+    
+    <div class="quests-content">
+      <div class="quests-tabs">
+        <button 
+          class="tab-button" 
+          :class="{ active: activeTab === 'active' }"
+          @click="activeTab = 'active'"
+        >
+          Quêtes Actives
+        </button>
+        <button 
+          class="tab-button" 
+          :class="{ active: activeTab === 'completed' }"
+          @click="activeTab = 'completed'"
+        >
+          Quêtes Complétées
+        </button>
+        <button 
+          class="tab-button" 
+          :class="{ active: activeTab === 'failed' }"
+          @click="activeTab = 'failed'"
+        >
+          Quêtes Échouées
+        </button>
+      </div>
+      
+      <div class="quests-list">
+        <div v-if="filteredQuests.length === 0" class="no-quests">
+          <p v-if="activeTab === 'active'">Aucune quête active. Explorez le monde pour en découvrir.</p>
+          <p v-else-if="activeTab === 'completed'">Aucune quête complétée pour le moment.</p>
+          <p v-else>Aucune quête échouée pour le moment.</p>
+        </div>
+        
+        <div v-for="quest in filteredQuests" :key="quest.id" class="quest-card">
+          <div class="quest-header">
+            <h3 class="quest-title">{{ quest.title }}</h3>
+            <span 
+              class="quest-difficulty" 
+              :class="`difficulty-${quest.difficulty.toLowerCase()}`"
+            >
+              {{ quest.difficulty }}
+            </span>
+          </div>
+          
+          <div class="quest-description">{{ quest.description }}</div>
+          
+          <div class="quest-objectives">
+            <h4>Objectifs:</h4>
+            <ul class="objectives-list">
+              <li 
+                v-for="objective in quest.objectives" 
+                :key="objective.id"
+                :class="{ 'completed': objective.completed }"
+              >
+                <span class="objective-status">
+                  <span v-if="objective.completed" class="checkmark">✓</span>
+                  <span v-else class="pending">○</span>
+                </span>
+                {{ objective.description }}
+                <span v-if="objective.progress" class="objective-progress">
+                  ({{ objective.current }}/{{ objective.target }})
+                </span>
+              </li>
+            </ul>
+          </div>
+          
+          <div class="quest-rewards">
+            <h4>Récompenses:</h4>
+            <div class="rewards-list">
+              <div class="reward-item" v-if="quest.rewards.experience">
+                <span class="reward-icon xp-icon">★</span>
+                <span class="reward-value">{{ quest.rewards.experience }} XP</span>
+              </div>
+              <div class="reward-item" v-if="quest.rewards.gold">
+                <span class="reward-icon gold-icon">⦿</span>
+                <span class="reward-value">{{ quest.rewards.gold }} Or</span>
+              </div>
+              <div class="reward-item" v-for="item in quest.rewards.items" :key="item.id">
+                <span class="reward-icon item-icon">⚓</span>
+                <span class="reward-value">{{ item.name }}</span>
+              </div>
+            </div>
+          </div>
+          
+          <div v-if="activeTab === 'active'" class="quest-actions">
+            <button class="track-button" :class="{ 'tracking': quest.tracking }" @click="toggleTracking(quest)">
+              {{ quest.tracking ? 'Suivi actif' : 'Suivre cette quête' }}
+            </button>
+            <button v-if="quest.canAbandon" class="abandon-button" @click="abandonQuest(quest)">
+              Abandonner
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, computed } from 'vue';
+
+const props = defineProps({
+  quests: {
+    type: Array,
+    default: () => []
+  }
+});
+
+const activeTab = ref('active');
+
+// Filtre les quêtes selon l'onglet actif
+const filteredQuests = computed(() => {
+  if (!props.quests || props.quests.length === 0) return [];
+  return props.quests.filter(quest => quest.status === activeTab.value);
+});
+
+// Change le suivi de la quête
+function toggleTracking(quest) {
+  quest.tracking = !quest.tracking;
+  
+  // Si la quête est suivie, désactiver le suivi des autres quêtes
+  if (quest.tracking) {
+    props.quests.forEach(q => {
+      if (q.id !== quest.id) {
+        q.tracking = false;
+      }
+    });
+  }
+}
+
+// Abandonne une quête
+function abandonQuest(quest) {
+  if (confirm(`Êtes-vous sûr de vouloir abandonner la quête "${quest.title}" ? Cette action est irréversible.`)) {
+    quest.status = 'failed';
+    quest.tracking = false;
+  }
+}
+</script>
+
+<style scoped>
+.quests-view {
+  width: 100%;
+  height: 100%;
+  color: #e8e8e8;
+}
+
+h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #1890ff;
+  font-size: 22px;
+}
+
+.quests-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Onglets */
+.quests-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.tab-button {
+  padding: 8px 15px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #ccc;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tab-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.tab-button.active {
+  background-color: rgba(24, 144, 255, 0.2);
+  color: #1890ff;
+  border-color: rgba(24, 144, 255, 0.5);
+}
+
+/* Liste des quêtes */
+.quests-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  max-height: calc(100vh - 180px);
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.no-quests {
+  text-align: center;
+  padding: 30px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  color: #777;
+  font-style: italic;
+}
+
+.quest-card {
+  background-color: rgba(40, 40, 50, 0.5);
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.quest-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.quest-title {
+  margin: 0;
+  color: #1890ff;
+  font-size: 1.2rem;
+}
+
+.quest-difficulty {
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.difficulty-facile {
+  background-color: rgba(82, 196, 26, 0.2);
+  color: #52c41a;
+}
+
+.difficulty-modéré {
+  background-color: rgba(250, 173, 20, 0.2);
+  color: #faad14;
+}
+
+.difficulty-difficile {
+  background-color: rgba(250, 84, 28, 0.2);
+  color: #fa541c;
+}
+
+.quest-description {
+  color: #bbb;
+  margin-bottom: 15px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Objectifs */
+.quest-objectives, .quest-rewards {
+  margin-bottom: 15px;
+}
+
+.quest-objectives h4, .quest-rewards h4 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-size: 1rem;
+  color: #ccc;
+}
+
+.objectives-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.objectives-list li {
+  padding: 5px 0;
+  display: flex;
+  align-items: flex-start;
+  color: #bbb;
+}
+
+.objectives-list li.completed {
+  color: #777;
+  text-decoration: line-through;
+}
+
+.objective-status {
+  display: inline-block;
+  width: 20px;
+  margin-right: 8px;
+  text-align: center;
+}
+
+.checkmark {
+  color: #52c41a;
+  font-weight: bold;
+}
+
+.pending {
+  color: #555;
+}
+
+.objective-progress {
+  margin-left: 5px;
+  font-size: 0.85rem;
+  color: #1890ff;
+}
+
+/* Récompenses */
+.rewards-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.reward-item {
+  display: flex;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.reward-icon {
+  margin-right: 5px;
+  font-size: 1rem;
+}
+
+.xp-icon {
+  color: #722ed1;
+}
+
+.gold-icon {
+  color: #faad14;
+}
+
+.item-icon {
+  color: #1890ff;
+}
+
+/* Actions */
+.quest-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.track-button, .abandon-button {
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  border: none;
+}
+
+.track-button {
+  background-color: rgba(24, 144, 255, 0.2);
+  color: #1890ff;
+  border: 1px solid rgba(24, 144, 255, 0.3);
+}
+
+.track-button:hover {
+  background-color: rgba(24, 144, 255, 0.3);
+}
+
+.track-button.tracking {
+  background-color: rgba(24, 144, 255, 0.4);
+  color: white;
+  border-color: rgba(24, 144, 255, 0.6);
+}
+
+.abandon-button {
+  background-color: rgba(255, 77, 79, 0.2);
+  color: #ff7875;
+  border: 1px solid rgba(255, 77, 79, 0.3);
+}
+
+.abandon-button:hover {
+  background-color: rgba(255, 77, 79, 0.3);
 }
 </style>

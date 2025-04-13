@@ -24,7 +24,7 @@
           </div>
           <div class="stat-item">
             <span class="stat-name">Endurance:</span>
-            <span class="stat-value">{{ hero.stats.currentStamina }} / {{ hero.stats.maxStamina }}</span>
+            <span class="stat-value">{{ hero.stats.currentStamina || 0 }} / {{ hero.stats.maxStamina || 0 }}</span>
           </div>
           <div class="stat-item">
             <span class="stat-name">Régén. Santé:</span>
@@ -47,7 +47,7 @@
     <div class="hero-sections">
       <div class="hero-section">
         <h3>Capacités</h3>
-        <div class="abilities-list" v-if="hero.abilities.length > 0">
+        <div class="abilities-list" v-if="hero.abilities && hero.abilities.length > 0">
           <div v-for="(ability, index) in hero.abilities" :key="index" class="ability-item">
             <div class="ability-header">
               <span class="ability-name">{{ ability.name }}</span>
@@ -63,7 +63,7 @@
       
       <div class="hero-section">
         <h3>Vestiges Incorporés</h3>
-        <div class="vestiges-list" v-if="hero.vestiges.length > 0">
+        <div class="vestiges-list" v-if="hero.vestiges && hero.vestiges.length > 0">
           <div v-for="(vestige, index) in hero.vestiges" :key="index" class="vestige-item">
             <div class="vestige-header">
               <span class="vestige-name">{{ vestige.name }}</span>
@@ -92,7 +92,7 @@ const props = defineProps({
 
 // Calcul du pourcentage d'expérience
 const experiencePercentage = computed(() => {
-  if (!props.hero.experienceForNextLevel) return 0;
+  if (!props.hero || !props.hero.experienceForNextLevel) return 0;
   return (props.hero.experience / props.hero.experienceForNextLevel) * 100;
 });
 </script>
@@ -101,6 +101,7 @@ const experiencePercentage = computed(() => {
 .hero-view {
   width: 100%;
   height: 100%;
+  color: #e8e8e8;
 }
 
 h2 {
@@ -113,8 +114,10 @@ h2 {
 h3 {
   margin-top: 0;
   margin-bottom: 15px;
-  color: #333;
+  color: #ccc;
   font-size: 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 8px;
 }
 
 .hero-sections {
@@ -125,10 +128,10 @@ h3 {
 
 .hero-section {
   flex: 1;
-  background-color: #fff;
+  background-color: rgba(40, 40, 50, 0.5);
   border-radius: 8px;
   padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .stats-grid {
@@ -138,17 +141,17 @@ h3 {
 }
 
 .stat-item {
-  background-color: #f9f9f9;
+  background-color: rgba(255, 255, 255, 0.05);
   padding: 10px 12px;
   border-radius: 6px;
-  border: 1px solid #eee;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   justify-content: space-between;
 }
 
 .stat-name {
   font-weight: bold;
-  color: #666;
+  color: #ccc;
 }
 
 .stat-value {
@@ -158,7 +161,7 @@ h3 {
 
 .experience-bar {
   height: 24px;
-  background-color: #f0f0f0;
+  background-color: rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   overflow: hidden;
   position: relative;
@@ -192,12 +195,12 @@ h3 {
 }
 
 .ability-item, .vestige-item {
-  background-color: white;
-  border: 1px solid #eee;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 6px;
   padding: 12px;
   margin-bottom: 12px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .ability-header, .vestige-header {
@@ -214,7 +217,7 @@ h3 {
 
 .ability-type {
   padding: 3px 10px;
-  background-color: #e6f7ff;
+  background-color: rgba(24, 144, 255, 0.2);
   border-radius: 12px;
   font-size: 12px;
   color: #1890ff;
@@ -222,7 +225,7 @@ h3 {
 
 .vestige-level {
   padding: 3px 10px;
-  background-color: #f6ffed;
+  background-color: rgba(82, 196, 26, 0.2);
   border-radius: 12px;
   font-size: 12px;
   color: #52c41a;
@@ -230,16 +233,16 @@ h3 {
 
 .ability-description, .vestige-description {
   font-size: 14px;
-  color: #666;
+  color: #bbb;
   line-height: 1.5;
 }
 
 .no-abilities, .no-vestiges {
   padding: 30px;
   text-align: center;
-  color: #999;
+  color: #777;
   font-style: italic;
-  background-color: #f9f9f9;
+  background-color: rgba(255, 255, 255, 0.05);
   border-radius: 6px;
 }
 </style>

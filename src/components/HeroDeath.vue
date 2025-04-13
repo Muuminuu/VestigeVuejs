@@ -54,7 +54,7 @@ function cancelDeath() {
         
         <div class="vestige-preview">
           <h3>{{ newVestigeName }}</h3>
-          <p>Level {{ hero?.level }} {{ hero?.characterClass }}</p>
+          <p>Level {{ hero?.level }}</p>
           <p>This vestige will contain a portion of {{ hero?.name }}'s power and possibly one of their abilities.</p>
         </div>
         
@@ -83,8 +83,7 @@ function cancelDeath() {
 }
 
 .simulate-death-button:hover {
-  background-color: #fafafa;
-}ff7875;
+  background-color: #ff7875;
 }
 
 .death-modal {
@@ -157,5 +156,7 @@ function cancelDeath() {
   font-size: 16px;
 }
 
-/* .cancel-button:hover {
-  background-color: # */
+.cancel-button:hover {
+  background-color: #fafafa;
+}
+</style>

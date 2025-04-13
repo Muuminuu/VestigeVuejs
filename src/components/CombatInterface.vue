@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useGameStore } from '../stores/gameStore'
-import { CombatSystem, type CombatAction, type CombatResult } from '../core/systems/CombatSystem'
+import { CombatSystem, type CombatAction, type CombatResult } from '../core/systems/CombatSystems'
 import { Enemy } from '../core/entities/Enemy'
 import { EnemyType } from '../core/types/EnemyType'
 import { DamageType } from '../core/types/DamageType'

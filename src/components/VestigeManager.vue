@@ -18,7 +18,7 @@ function formatDate(date: Date): string {
 }
 
 function getVestigeBonusDescription(vestige: Vestige): string {
-  let description = vestige.bonus.description
+  let description = vestige.bonus.description || 'No description available'
   
   if (vestige.bonus.statBonuses) {
     const stats = vestige.bonus.statBonuses

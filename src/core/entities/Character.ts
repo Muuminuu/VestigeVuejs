@@ -2,6 +2,7 @@ import { Entity } from './Entity';
 import type { Stats } from '../types/Stats';
 import type { Ability } from '../types/Ability';
 import type { Combatant } from '../types/Combatant';
+import type { DamageType } from '../types/DamageType';
 
 export abstract class Character extends Entity {
     stats: Stats;
@@ -17,7 +18,7 @@ export abstract class Character extends Entity {
         this.experience = 0;
     }
 
-    takeDamage(amount: number): void {
+    takeDamage(amount: number, damageType?: DamageType): void {
         this.stats.currentHealth = Math.max(0, this.stats.currentHealth - amount);
     }
 

@@ -6,6 +6,7 @@ import { Enemy } from '../core/entities/Enemy'
 import { EnemyType } from '../core/types/EnemyType'
 import { DamageType } from '../core/types/DamageType'
 import { TargetType } from '../core/types/TargetType'
+import { Hero } from '../core/entities/Hero'
 import { v4 as uuidv4 } from 'uuid' // Vous devrez installer ce package
 
 const gameStore = useGameStore()
@@ -124,7 +125,7 @@ function startCombat() {
   enemy.value = newEnemy
   
   // Initialiser le système de combat
-  combatSystem.value = new CombatSystem(hero.value, newEnemy)
+  combatSystem.value = new CombatSystem(hero.value as Hero, newEnemy)
   
   // Réinitialiser les logs et les résultats
   combatLog.value = []

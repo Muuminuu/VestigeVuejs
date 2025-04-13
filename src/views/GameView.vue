@@ -4,7 +4,7 @@ import { useGameStore } from '../stores/gameStore'
 import HeroCreation from '../components/HeroCreation.vue'
 import HeroDisplay from '../components/HeroDisplay.vue'
 import HeroDeath from '../components/HeroDeath.vue'
-import { VestigeManager } from '../core/managers/VestigeManager'
+import VestigeManagerComponent from '../components/VestigeManagerComponent.vue'
 import CombatInterface from '../components/CombatInterface.vue'
 
 const gameStore = useGameStore()
@@ -38,9 +38,7 @@ function endCombat() {
       </div>
       
       <div class="game-panel side-panel">
-        <div>
-          <VestigeManager />
-        </div>
+        <VestigeManagerComponent />
       </div>
     </div>
   </div>

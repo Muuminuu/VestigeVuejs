@@ -1,8 +1,8 @@
-// src/router/index.ts
 import { createRouter, createWebHistory } from 'vue-router'
 import { useGameStore } from '../stores/gameStore'
 import WelcomeScreen from '../views/WelcomeScreen.vue'
-import GameView from '../views/GameView.vue'
+import CharacterCreation from '../views/CharacterCreation.vue'
+import GamePage from '../views/GamePage.vue'
 import AboutView from '../views/AboutView.vue'
 
 const router = createRouter({
@@ -14,9 +14,14 @@ const router = createRouter({
       component: WelcomeScreen
     },
     {
+      path: '/create',
+      name: 'create',
+      component: CharacterCreation
+    },
+    {
       path: '/game',
       name: 'game',
-      component: GameView,
+      component: GamePage,
       meta: { requiresHero: true }
     },
     {

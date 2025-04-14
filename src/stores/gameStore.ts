@@ -4,7 +4,9 @@ import { Hero } from '../core/entities/Hero';
 import type { Vestige } from '../core/types/Vestige';
 import { VestigeManager } from '../core/managers/VestigeManager';
 import type { Stats } from '../core/types/Stats';
-import { v4 as uuidv4 } from 'uuid'; // Vous devrez installer ce package
+import { DamageType } from '../core/types/DamageType';
+import { TargetType } from '../core/types/TargetType';
+import { v4 as uuidv4 } from 'uuid';
 
 export const useGameStore = defineStore('game', () => {
   // Current hero
@@ -56,7 +58,13 @@ export const useGameStore = defineStore('game', () => {
   
   // Available vestiges
   const vestiges = computed(() => {
-    return VestigeManager.getInstance().getVestiges();
+    // Si VestigeManager n'est pas implémenté, retourner un tableau vide
+    try {
+      return VestigeManager.getInstance().getVestiges();
+    } catch (error) {
+      console.warn('VestigeManager non implémenté ou erreur:', error);
+      return [];
+    }
   });
   
   // Create a new hero
@@ -71,12 +79,32 @@ export const useGameStore = defineStore('game', () => {
       baseStats
     );
     
+    // Ajouter une capacité de base
+    const basicAbility = {
+      id: uuidv4(),
+      name: "Frappe Puissante",
+      description: "Une attaque puissante qui inflige des dégâts physiques importants.",
+      power: 120,
+      cooldown: 3,
+      currentCooldown: 0,
+      targetType: TargetType.SINGLE,
+      damageType: DamageType.PHYSICAL,
+      manaCost: 5,
+      isPassive: false
+    };
+    
+    hero.value.abilities.push(basicAbility);
+    
     // Automatically incorporate all available vestiges
-    const availableVestiges = VestigeManager.getInstance().getVestiges();
-    if (availableVestiges.length > 0) {
-      for (const vestige of availableVestiges) {
-        hero.value.incorporateVestige(vestige);
+    try {
+      const availableVestiges = VestigeManager.getInstance().getVestiges();
+      if (availableVestiges.length > 0) {
+        for (const vestige of availableVestiges) {
+          hero.value.incorporateVestige(vestige);
+        }
       }
+    } catch (error) {
+      console.warn('Erreur lors de l\'incorporation des vestiges:', error);
     }
     
     // Sauvegarder le héros
@@ -96,10 +124,14 @@ export const useGameStore = defineStore('game', () => {
     
     // Create a vestige from the dying hero if requested
     if (createVestige) {
-      const vestige = hero.value.createVestige();
-      
-      // Add the vestige to our collection
-      VestigeManager.getInstance().addVestige(vestige);
+      try {
+        const vestige = hero.value.createVestige();
+        
+        // Add the vestige to our collection
+        VestigeManager.getInstance().addVestige(vestige);
+      } catch (error) {
+        console.warn('Erreur lors de la création du vestige:', error);
+      }
     }
     
     // Clear the current hero
@@ -111,14 +143,19 @@ export const useGameStore = defineStore('game', () => {
   function incorporateVestige(vestigeId: string) {
     if (!hero.value) return false;
     
-    const allVestiges = VestigeManager.getInstance().getVestiges();
-    const vestige = allVestiges.find(v => v.id === vestigeId);
-    
-    if (vestige) {
-      hero.value.incorporateVestige(vestige);
-      saveHero();
-      return true;
+    try {
+      const allVestiges = VestigeManager.getInstance().getVestiges();
+      const vestige = allVestiges.find(v => v.id === vestigeId);
+      
+      if (vestige) {
+        hero.value.incorporateVestige(vestige);
+        saveHero();
+        return true;
+      }
+    } catch (error) {
+      console.warn('Erreur lors de l\'incorporation du vestige:', error);
     }
+    
     return false;
   }
   

@@ -522,10 +522,11 @@
     color: #e6edf3;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   } */
-  .game-interface {
+
+  /* .game-interface {
     display: flex;
     flex-direction: column;
-    width: 100%;  /* Changé de 100vw à 100% */
+    width: 100%; 
     height: 100vh;
     overflow: hidden;
     background-color: #0d1117;
@@ -534,7 +535,19 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    }
+    } */
+    .game-interface {
+        display: flex;
+        flex-direction: column;
+        width: 100%; /* Au lieu de 100vw */
+        height: 100vh;
+        overflow: hidden;
+        background-color: #0d1117;
+        color: #e6edf3;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        }
 
   
   /* En-tête du jeu */
@@ -546,17 +559,27 @@
     background-color: #161b22;
     border-bottom: 1px solid #30363d;
   } */
-  .game-header {
+  /* .game-header {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     gap: 10px;
-    padding: 10px 5px; /* Réduit le padding horizontal */
+    padding: 10px 5px;
     background-color: #161b22;
     border-bottom: 1px solid #30363d;
     width: 100%;
     box-sizing: border-box;
-    }
-  
+    } */
+    .game-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  padding: 10px;
+  background-color: #161b22;
+  border-bottom: 1px solid #30363d;
+  width: 100%;
+  box-sizing: border-box;
+}
+
   .header-block {
     padding: 10px;
     background-color: #0d1117;
@@ -754,14 +777,23 @@
     padding: 10px;
     background-color: #0d1117;
   } */
-  .game-content {
+  /* .game-content {
     flex: 1;
     overflow-y: auto;
-    padding: 10px 5px; /* Réduit le padding horizontal */
+    padding: 10px 5px; 
     background-color: #0d1117;
     width: 100%;
     box-sizing: border-box;
-    }
+    } */
+
+    .game-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+  background-color: #0d1117;
+  width: 100%;
+  box-sizing: border-box;
+}
   
   .game-panel {
     background-color: #161b22;
@@ -830,17 +862,28 @@
     background-color: #161b22;
     border-top: 1px solid #30363d;
   } */
-  .game-footer {
+  /* .game-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 5px; /* Réduit le padding horizontal */
+    padding: 10px 5px; 
     background-color: #161b22;
     border-top: 1px solid #30363d;
     width: 100%;
     box-sizing: border-box;
-    }
+    } */
   
+    .game-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: #161b22;
+  border-top: 1px solid #30363d;
+  width: 100%;
+  box-sizing: border-box;
+}
+
   .quick-actions {
     display: flex;
     gap: 10px;

@@ -14,15 +14,16 @@ import { RouterView } from 'vue-router'
   box-sizing: border-box;
 }
 
-html, body {
+/* html, body {
   height: 100%;
   width: 100%;
   overflow: hidden;
-}
+} */
+
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
-    Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #333;
@@ -31,16 +32,31 @@ body {
   min-height: 100vh;
 }
 
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
 /* #app {
   height: 100vh;
   display: flex;
   flex-direction: column;
 } */
 
+/* #app {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+} */
+
 #app {
   height: 100%;
   width: 100%;
   overflow: hidden;
+  margin: 0;
+  padding: 0;
 }
 
 h1, h2, h3, h4, h5, h6 {

@@ -112,7 +112,10 @@
   import HeroCreation from '../components/HeroCreation.vue'
   import CombatInterface from '../components/CombatInterface.vue'
   import MapView from './MapView.vue'
-  import { HeroView, InventoryView, QuestsView, CodexView } from '.'
+  import HeroView from './HeroView.vue'
+  import InventoryView from './InventoryView.vue'
+  import QuestsView from './QuestsView.vue' 
+  import CodexView from './CodexView.vue'
   
   // Store du jeu
   const gameStore = useGameStore()

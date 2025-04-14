@@ -1,21 +1,23 @@
 <!-- src/views/WelcomeScreen.vue -->
 <template>
-    <div class="welcome-screen" :class="currentSeason">
+    <div class="welcome-screen" 
+
+    >
       <!-- Arrière-plan animé qui change selon la saison -->
       <div class="seasonal-background">
-        <div class="pixel-art-scene" :class="{ 
+        <!-- <div class="pixel-art-scene" :class="{ 
           'rainy': weather === 'rainy',
           'sunny': weather === 'sunny',
           'cloudy': weather === 'cloudy',
           'night': timeOfDay === 'night'
-        }"></div>
+        }"></div> -->
         
         <!-- Effets météo -->
-        <div v-if="weather === 'rainy'" class="weather-effect rain-effect"></div>
+        <!-- <div v-if="weather === 'rainy'" class="weather-effect rain-effect"></div>
         <div v-if="seasonalEffects" class="seasonal-effect" :class="currentSeason"></div>
         
         <!-- Filtre de luminosité -->
-        <div class="brightness-filter" :style="{ opacity: 1 - (brightness / 100) }"></div>
+        <!-- <div class="brightness-filter" :style="{ opacity: 1 - (brightness / 100) }"></div> -->
       </div>
       
       <div class="welcome-container">
@@ -43,12 +45,12 @@
             <p>Comment écrirez-vous votre légende ?</p>
           </div>
           
-          <div class="time-display">
+          <!-- <div class="time-display">
             <div class="season-indicator">{{ seasonNames[currentSeason] }}</div>
             <div class="time-indicator">{{ getFormattedTime() }}</div>
             <div class="weather-indicator">{{ weatherNames[weather] }}</div>
             <div class="brightness-indicator">Luminosité: {{ brightness }}%</div>
-          </div>
+          </div> -->
           
           <button 
             :disabled="!heroName.trim()" 
@@ -73,19 +75,18 @@
   import { ref, onMounted, onUnmounted, computed } from 'vue';
   import { useGameStore } from '../stores/gameStore';
   import { useRouter } from 'vue-router';
-  import { useTimeSystem } from '../composables/useTimeSystem';
   
   const router = useRouter();
   const gameStore = useGameStore();
-  const { 
-    currentSeason, 
-    weather, 
-    timeOfDay,
-    brightness, 
-    updateTimeSystem,
-    startTimeSystem,
-    stopTimeSystem
-  } = useTimeSystem();
+  // const { 
+  //   currentSeason, 
+  //   weather, 
+  //   timeOfDay,
+  //   brightness, 
+  //   updateTimeSystem,
+  //   startTimeSystem,
+  //   stopTimeSystem
+  // } = useTimeSystem();
   
   // État de la page
   const currentStep = ref('create');
@@ -105,20 +106,20 @@
     rainy: 'Pluvieux'
   };
   
-  // Effets saisonniers (feuilles, neige, etc.)
-  const seasonalEffects = computed(() => {
-    return currentSeason.value === 'autumn' || currentSeason.value === 'winter';
-  });
+  // // Effets saisonniers (feuilles, neige, etc.)
+  // const seasonalEffects = computed(() => {
+  //   return currentSeason.value === 'autumn' || currentSeason.value === 'winter';
+  // });
   
-  // Lancer le système de temps
-  onMounted(() => {
-    startTimeSystem();
-  });
+  // // Lancer le système de temps
+  // onMounted(() => {
+  //   startTimeSystem();
+  // });
   
-  // Arrêter le système de temps quand on quitte cette page
-  onUnmounted(() => {
-    stopTimeSystem();
-  });
+  // // Arrêter le système de temps quand on quitte cette page
+  // onUnmounted(() => {
+  //   stopTimeSystem();
+  // });
   
   // Formatage de l'heure
   function getFormattedTime() {

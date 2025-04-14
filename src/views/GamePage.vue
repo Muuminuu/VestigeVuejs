@@ -24,6 +24,15 @@
             </div>
           </div>
         </div>
+
+        <div>
+          <h2>Temps actuel</h2>
+          <p>Année : {{ currentYear }}</p>
+          <p>Saison : {{ currentSeason }}</p>
+          <p>Jour : {{ currentDay }}</p>
+          <p>Heure : {{ currentHour }}</p>
+          <button @click="advanceTime">Avancer d'une heure</button>
+        </div>
         
         <div class="menu-buttons">
           <button class="menu-button" @click="returnToHome">
@@ -112,6 +121,7 @@
   import { ref, computed, onMounted } from 'vue';
   import { useRouter } from 'vue-router';
   import { useGameStore } from '../stores/gameStore';
+  import { useTimeStore } from '../stores/timeStore';
   
   // Composants
   import HeroDisplay from '../components/HeroDisplay.vue';
@@ -123,12 +133,19 @@
   
   const router = useRouter();
   const gameStore = useGameStore();
-  
+  const timeStore = useTimeStore();
+
   // État
   const activeTab = ref('hero');
   const showCombat = ref(false);
   const showDeathModal = ref(false);
   
+  // Données réactives pour le temps
+  const currentYear = computed(() => timeStore.state.year);
+  const currentSeason = computed(() => timeStore.state.season);
+  const currentDay = computed(() => timeStore.state.day);
+  const currentHour = computed(() => timeStore.state.hour);
+
   // Données
   const hero = computed(() => gameStore.hero);
   const quests = ref([
@@ -199,6 +216,10 @@
   ];
   
   // Méthodes
+  function advanceTime() {
+    timeStore.advanceTime(1); // Avancer d'une heure via le TimeStore
+  }
+
   function returnToHome() {
     router.push('/');
   }
@@ -216,11 +237,12 @@
     showDeathModal.value = false;
     router.push('/');
   }
-  
+
   // Vérification initiale
   onMounted(() => {
     if (!hero.value) {
       router.push('/');
+      timeStore.loadTime(); // Charger l'état du temps au montage
     }
   });
   </script>

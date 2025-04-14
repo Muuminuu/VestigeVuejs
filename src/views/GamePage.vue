@@ -95,12 +95,22 @@ function createHero() {
 </script>
 
 <style scoped>
-.game-page {
+/* .game-page {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
   background-color: #0d1117;
   color: #e6edf3;
+} */
+.game-page {
+  width: 100%;  /* Changé de 100vw à 100% */
+  height: 100vh;
+  overflow: hidden;
+  background-color: #0d1117;
+  color: #e6edf3;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 .no-hero-container {

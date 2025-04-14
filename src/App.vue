@@ -14,6 +14,12 @@ import { RouterView } from 'vue-router'
   box-sizing: border-box;
 }
 
+html, body {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
     Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
@@ -25,10 +31,16 @@ body {
   min-height: 100vh;
 }
 
-#app {
+/* #app {
   height: 100vh;
   display: flex;
   flex-direction: column;
+} */
+
+#app {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
 }
 
 h1, h2, h3, h4, h5, h6 {

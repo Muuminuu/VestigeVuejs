@@ -512,7 +512,7 @@
   
   <style scoped>
   /* Styles généraux */
-  .game-interface {
+  /* .game-interface {
     display: flex;
     flex-direction: column;
     width: 100vw;
@@ -521,17 +521,41 @@
     background-color: #0d1117;
     color: #e6edf3;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  }
+  } */
+  .game-interface {
+    display: flex;
+    flex-direction: column;
+    width: 100%;  /* Changé de 100vw à 100% */
+    height: 100vh;
+    overflow: hidden;
+    background-color: #0d1117;
+    color: #e6edf3;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    }
+
   
   /* En-tête du jeu */
-  .game-header {
+  /* .game-header {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     gap: 10px;
     padding: 10px;
     background-color: #161b22;
     border-bottom: 1px solid #30363d;
-  }
+  } */
+  .game-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    padding: 10px 5px; /* Réduit le padding horizontal */
+    background-color: #161b22;
+    border-bottom: 1px solid #30363d;
+    width: 100%;
+    box-sizing: border-box;
+    }
   
   .header-block {
     padding: 10px;
@@ -664,13 +688,18 @@
   }
   
   /* Contrôles du jeu */
-  .controls-grid {
+  /* .controls-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 8px;
-  }
+  } */
+  .controls-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Passé de 3 à 2 colonnes */
+    gap: 6px;
+    }
   
-  .control-button {
+  /* .control-button {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -681,7 +710,20 @@
     padding: 8px 5px;
     cursor: pointer;
     transition: all 0.2s ease;
-  }
+  } */
+  .control-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #21262d;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 6px 4px; /* Réduit le padding */
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: 55px; /* Garantit une hauteur minimale */
+    }
   
   .control-button:hover {
     background-color: #30363d;
@@ -693,18 +735,33 @@
     margin-bottom: 4px;
   }
   
-  .control-text {
+  /* .control-text {
     font-size: 0.8rem;
     color: #c9d1d9;
-  }
+  } */
+  .control-text {
+    font-size: 0.75rem; /* Taille de texte plus petite */
+    color: #c9d1d9;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    }
   
   /* Contenu principal du jeu */
-  .game-content {
+  /* .game-content {
     flex: 1;
     overflow-y: auto;
     padding: 10px;
     background-color: #0d1117;
-  }
+  } */
+  .game-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px 5px; /* Réduit le padding horizontal */
+    background-color: #0d1117;
+    width: 100%;
+    box-sizing: border-box;
+    }
   
   .game-panel {
     background-color: #161b22;
@@ -765,14 +822,24 @@
   }
   
   /* Pied de page */
-  .game-footer {
+  /* .game-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 10px;
     background-color: #161b22;
     border-top: 1px solid #30363d;
-  }
+  } */
+  .game-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 5px; /* Réduit le padding horizontal */
+    background-color: #161b22;
+    border-top: 1px solid #30363d;
+    width: 100%;
+    box-sizing: border-box;
+    }
   
   .quick-actions {
     display: flex;

@@ -3,33 +3,17 @@ import { RouterView } from 'vue-router'
 </script>
 
 <template>
-  <RouterView />
+  <div class="app-container">
+    <RouterView />
+  </div>
 </template>
 
 <style>
-/* Styles globaux */
+/* Reset styles */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-}
-
-/* html, body {
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-} */
-
-
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
-  Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: #333;
-  background-color: #f9f9f9;
-  line-height: 1.6;
-  min-height: 100vh;
 }
 
 html, body {
@@ -38,34 +22,28 @@ html, body {
   height: 100%;
   width: 100%;
   overflow: hidden;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+    Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #333;
+  background-color: #0d1117;
 }
-/* #app {
+
+.app-container {
   height: 100vh;
+  width: 100vw;
+  overflow: hidden;
   display: flex;
-  flex-direction: column;
-} */
+  justify-content: center;
+}
 
-/* #app {
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-} */
-
-/* #app {
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-  margin: 0;
-  padding: 0;
-} */
 #app {
-  height: 100%;
+  height: 100vh;
   width: 100%;
   overflow: hidden;
-  margin: 0;
-  padding: 0;
   display: flex;
-  justify-content: center; /* Centre horizontalement */
+  justify-content: center;
 }
 
 h1, h2, h3, h4, h5, h6 {

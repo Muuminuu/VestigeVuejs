@@ -544,12 +544,30 @@
   overflow: hidden;
   background-color: #0d1117;
   color: #e6edf3;
-  margin: 0 auto; /* Centre horizontalement */
+  margin: 0;
   padding: 0;
   box-sizing: border-box;
-  max-width: 1440px; /* Limite la largeur maximale */
+  max-width: 1440px; /* Limit maximum width but don't add margins */
+}
+.game-header, 
+.game-content,
+.game-footer {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  padding-left: 15px;
+  padding-right: 15px;
 }
 
+/* For smaller screens, reduce padding */
+@media (max-width: 768px) {
+  .game-header,
+  .game-content,
+  .game-footer {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}
   
   /* En-tête du jeu */
   /* .game-header {

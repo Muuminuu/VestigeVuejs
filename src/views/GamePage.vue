@@ -103,7 +103,7 @@ function createHero() {
   color: #e6edf3;
 } */
 .game-page {
-  width: 100%;  /* Changé de 100vw à 100% */
+  width: 100%;  /* Change from 100vw to 100% */
   height: 100vh;
   overflow: hidden;
   background-color: #0d1117;
@@ -111,18 +111,25 @@ function createHero() {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+}
+
+.game-page > div {
+  width: 100%;
+  max-width: 1440px; /* Maximum width for large screens */
+  display: flex;
+  justify-content: center;
+  margin: 0;
 }
 
 .no-hero-container {
   width: 100%;
-  height: 100%;
+  margin: 0;
+  padding: 0;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-image: linear-gradient(rgba(13, 17, 23, 0.7), rgba(13, 17, 23, 0.9)), 
-                    url('/path/to/background.jpg');
-  background-size: cover;
-  background-position: center;
 }
 
 .no-hero-card {

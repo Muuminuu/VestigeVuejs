@@ -36,9 +36,9 @@ const gameStore = useGameStore();
 // Vérifie si un héros existe déjà
 const hasHero = computed(() => gameStore.hero !== null);
 
-// Navigation vers la création de personnage
+// Navigation vers le jeu
 function startGame() {
-  router.push('/create');
+  router.push('/game');
 }
 
 // Navigation directe vers le jeu (si un héros existe)
@@ -54,38 +54,39 @@ function continueGame() {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #121212;
+  background-color: #0d1117;
   background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/path/to/your/background.jpg');
   background-size: cover;
   background-position: center;
+  color: #e6edf3;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .welcome-container {
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(22, 27, 34, 0.8);
   border-radius: 12px;
   padding: 40px;
   width: 90%;
   max-width: 600px;
   text-align: center;
   backdrop-filter: blur(4px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-  color: white;
+  border: 1px solid #30363d;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
 }
 
 .game-title {
   font-size: 4rem;
   margin: 0;
   letter-spacing: 0.5rem;
-  color: #1890ff;
-  text-shadow: 0 0 10px rgba(24, 144, 255, 0.8);
+  color: #58a6ff;
+  text-shadow: 0 0 15px rgba(88, 166, 255, 0.6);
   font-weight: bold;
 }
 
 .game-subtitle {
   font-size: 1.5rem;
   margin-bottom: 40px;
-  color: #bbb;
+  color: #8b949e;
   font-style: italic;
 }
 
@@ -93,6 +94,11 @@ function continueGame() {
   margin-bottom: 40px;
   text-align: left;
   line-height: 1.6;
+}
+
+.hero-description p {
+  margin-bottom: 15px;
+  color: #c9d1d9;
 }
 
 .action-buttons {
@@ -103,7 +109,7 @@ function continueGame() {
 }
 
 .start-button, .continue-button {
-  background-color: #1890ff;
+  background-color: #238636;
   color: white;
   border: none;
   padding: 15px 30px;
@@ -112,35 +118,51 @@ function continueGame() {
   font-weight: bold;
   cursor: pointer;
   transition: all 0.3s ease;
-  width: 80%;
+  width: 100%;
   max-width: 300px;
 }
 
 .start-button:hover {
-  background-color: #40a9ff;
+  background-color: #2ea043;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(35, 134, 54, 0.4);
 }
 
 .continue-button {
-  background-color: #52c41a;
+  background-color: #58a6ff;
 }
 
 .continue-button:hover {
-  background-color: #73d13d;
+  background-color: #79b8ff;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(82, 196, 26, 0.3);
+  box-shadow: 0 4px 12px rgba(88, 166, 255, 0.4);
 }
 
 .about-link {
-  color: #bbb;
+  color: #8b949e;
   text-decoration: none;
-  margin-top: 10px;
+  margin-top: 20px;
   font-size: 0.9rem;
   transition: color 0.2s ease;
+  display: inline-block;
 }
 
 .about-link:hover {
-  color: #1890ff;
+  color: #58a6ff;
+}
+
+@media (max-width: 768px) {
+  .game-title {
+    font-size: 3rem;
+  }
+  
+  .game-subtitle {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+  }
+  
+  .welcome-container {
+    padding: 30px;
+  }
 }
 </style>

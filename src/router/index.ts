@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useGameStore } from '../stores/gameStore'
 import WelcomeScreen from '../views/WelcomeScreen.vue'
-import CharacterCreation from '../views/CharacterCreation.vue'
 import GamePage from '../views/GamePage.vue'
 import AboutView from '../views/AboutView.vue'
 
@@ -14,15 +13,10 @@ const router = createRouter({
       component: WelcomeScreen
     },
     {
-      path: '/create',
-      name: 'create',
-      component: CharacterCreation
-    },
-    {
       path: '/game',
       name: 'game',
       component: GamePage,
-      meta: { requiresHero: true }
+      meta: { requiresHero: false } // On désactive temporairement la vérification pour permettre la création de héros sur la page de jeu
     },
     {
       path: '/about',
@@ -38,7 +32,7 @@ router.beforeEach((to, from, next) => {
   
   // Check if the route requires a hero and if no hero exists
   if (to.meta.requiresHero && !gameStore.hero) {
-    // Redirect to welcome screen to create a hero
+    // Redirect to welcome screen
     next({ name: 'welcome' })
   } else {
     // Otherwise proceed normally

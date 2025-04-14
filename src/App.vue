@@ -51,12 +51,21 @@ html, body {
   overflow: hidden;
 } */
 
+/* #app {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+} */
 #app {
   height: 100%;
   width: 100%;
   overflow: hidden;
   margin: 0;
   padding: 0;
+  display: flex;
+  justify-content: center; /* Centre horizontalement */
 }
 
 h1, h2, h3, h4, h5, h6 {

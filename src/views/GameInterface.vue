@@ -537,17 +537,18 @@
     box-sizing: border-box;
     } */
     .game-interface {
-        display: flex;
-        flex-direction: column;
-        width: 100%; /* Au lieu de 100vw */
-        height: 100vh;
-        overflow: hidden;
-        background-color: #0d1117;
-        color: #e6edf3;
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        }
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background-color: #0d1117;
+  color: #e6edf3;
+  margin: 0 auto; /* Centre horizontalement */
+  padding: 0;
+  box-sizing: border-box;
+  max-width: 1440px; /* Limite la largeur maximale */
+}
 
   
   /* En-tête du jeu */
@@ -570,15 +571,15 @@
     box-sizing: border-box;
     } */
     .game-header {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 10px;
-  padding: 10px;
-  background-color: #161b22;
-  border-bottom: 1px solid #30363d;
-  width: 100%;
-  box-sizing: border-box;
-}
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 15px; /* Plus d'espace entre les colonnes */
+    padding: 15px;
+    background-color: #161b22;
+    border-bottom: 1px solid #30363d;
+    width: 100%;
+    box-sizing: border-box;
+  }
 
   .header-block {
     padding: 10px;
@@ -742,11 +743,12 @@
     background-color: #21262d;
     border: 1px solid #30363d;
     border-radius: 6px;
-    padding: 6px 4px; /* Réduit le padding */
+    padding: 10px;
     cursor: pointer;
     transition: all 0.2s ease;
-    min-height: 55px; /* Garantit une hauteur minimale */
-    }
+    min-height: 65px; /* Hauteur minimale pour uniformité */
+    width: 100%; /* Prend toute la largeur disponible */
+  }
   
   .control-button:hover {
     background-color: #30363d;
@@ -789,7 +791,7 @@
     .game-content {
   flex: 1;
   overflow-y: auto;
-  padding: 10px;
+  padding: 20px;
   background-color: #0d1117;
   width: 100%;
   box-sizing: border-box;
@@ -809,10 +811,15 @@
     padding: 20px;
   }
   
-  .adventure-content {
+  /* .adventure-content {
     max-width: 800px;
     margin: 0 auto;
-  }
+  } */
+  .adventure-content {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
   
   .adventure-content h2 {
     color: #58a6ff;
@@ -828,15 +835,22 @@
     font-size: 1.1rem;
   }
   
-  .adventure-actions {
+  /* .adventure-actions {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
     gap: 15px;
     margin-top: 30px;
-  }
+  } */
+  .adventure-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 30px;
+}
   
-  .action-button {
+  /* .action-button {
     background-color: #238636;
     color: white;
     border: none;
@@ -846,7 +860,19 @@
     font-size: 1rem;
     font-weight: bold;
     transition: all 0.2s ease;
-  }
+  } */
+  .action-button {
+  background-color: #238636;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: all 0.2s ease;
+  min-width: 180px; /* Largeur minimale pour uniformité */
+}
   
   .action-button:hover {
     background-color: #2ea043;
@@ -873,7 +899,7 @@
     box-sizing: border-box;
     } */
   
-    .game-footer {
+    /* .game-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -882,14 +908,31 @@
   border-top: 1px solid #30363d;
   width: 100%;
   box-sizing: border-box;
+} */
+.game-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background-color: #161b22;
+  border-top: 1px solid #30363d;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-  .quick-actions {
+  /* .quick-actions {
     display: flex;
     gap: 10px;
-  }
+  } */
+
+  .quick-actions {
+  display: flex;
+  justify-content: center; /* Centre les actions */
+  gap: 10px;
+  flex-wrap: wrap; /* Pour responsive */
+}
   
-  .quick-action-button {
+  /* .quick-action-button {
     background-color: #21262d;
     border: 1px solid #30363d;
     color: #c9d1d9;
@@ -897,7 +940,19 @@
     border-radius: 6px;
     cursor: pointer;
     transition: all 0.2s ease;
-  }
+  } */
+
+  .quick-action-button {
+  background-color: #21262d;
+  border: 1px solid #30363d;
+  color: #c9d1d9;
+  padding: 8px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 120px; /* Largeur minimale pour uniformité */
+  text-align: center;
+}
   
   .quick-action-button:hover {
     background-color: #30363d;
@@ -1086,7 +1141,11 @@
   @media (max-width: 768px) {
     .game-header {
       grid-template-columns: 1fr;
-      grid-template-rows: auto auto auto;
+      gap: 10px;
+    }
+
+    .action-button {
+      width: 100%;
     }
     
     .game-controls {
